@@ -1,0 +1,21 @@
+{% extends "authentication/base.html" %}
+{% block title %}Dashboard{% endblock title %}
+{% block content %}
+{% include 'dashboard/navbar.html' %}
+<div class="container">
+  
+    {% for message in messages %}
+<div class="container-fluid p-0">
+  <div class="alert {{ message.tags }} alert-dismissible" role="alert" >
+   
+    {{ message }}
+  </div>
+</div>
+{% endfor %}
+    <center>
+    <h1 class="text-white my-2 ">Welcome to the Dashboard!</h1>
+    <h3 class="text-white">{{user.username}}</h3>
+  </center>
+
+</div>
+{% endblock content %}

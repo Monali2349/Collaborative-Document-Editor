@@ -1,0 +1,9 @@
+{
+    "editor.codeActionsOnSave": {
+
+    },
+    "python.autoComplete.extraPaths": [
+        
+    ],
+    "python.analysis.extraPaths": []
+}
