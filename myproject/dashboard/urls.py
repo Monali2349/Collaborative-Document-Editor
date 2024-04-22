@@ -9,6 +9,8 @@
 # ]
 from django.urls import path
 from . import views
+from django.contrib.auth.views import LogoutView
+
 
 urlpatterns = [
     path("", views.dashboard, name="dashboard"),
@@ -17,8 +19,11 @@ urlpatterns = [
     # path('doc_detail/<str:room>', views.room, name='room'),
     path('createRoom/', views.createRoom, name='createRoom'),
     path('joinRoom/', views.joinRoom, name='joinRoom'),
-    # path('create/<str:group_name>/', views.create, name='create'),
+    path("logout/", LogoutView.as_view(), name="logout"),
+
+    
   
-    path('<str:room>/',views.editor,name='editor'),    
+    path('document/<str:room>/',views.editor,name='editor'),    
+    path("saveContent/", views.saveContent, name="saveContent"),
    
 ]

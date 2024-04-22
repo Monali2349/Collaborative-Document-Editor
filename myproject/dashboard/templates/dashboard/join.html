@@ -61,6 +61,14 @@ body {
 
 
 <div class="container">
+  {% for message in messages %}
+<div class="container-fluid p-0">
+  <div class="alert {{ message.tags }} alert-dismissible" role="alert" >
+   
+    {{ message }}
+  </div>
+</div>
+{% endfor %}
     <style>
     input[type=text], select {
     width: 100%;

@@ -92,9 +92,12 @@
 </head>
 <body>
     <h1>Group Name:{{room}}</h1>
-       
+    <form id="post-form" method="POST" action={% url "saveContent" %}>
+        {% csrf_token %}
     <textarea id="chat-log" cols="100" rows="20" name="content"></textarea><br>
-        {% comment %} <input type="submit" value="Save"> {% endcomment %}
+        
+    <input type="submit" value="Save">
+      </form>
    
     {{room|json_script:"group-name"}}
     <script>
