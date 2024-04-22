@@ -35,6 +35,7 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 # Application definition
 
 INSTALLED_APPS = [
+    'daphne',
     'ckeditor',
     'authentication',
     'dashboard',
@@ -78,7 +79,10 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'myproject.wsgi.application'
+# WSGI_APPLICATION = 'myproject.wsgi.application'
+
+
+ASGI_APPLICATION = 'myproject.asgi.application'
 
 
 # Database
@@ -172,4 +176,9 @@ CKEDITOR_CONFIGS = {
                 'codesnippet',
             ]),
         },
+}
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels.layers.InMemoryChannelLayer',
+    },
 }

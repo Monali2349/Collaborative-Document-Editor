@@ -1,0 +1,135 @@
+{% comment %} <!-- blogs/add_blogs.html-->
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css" integrity="sha384-xOolHFLEh07PJGoPkLv1IbcEPTNtaed2xpHsD9ESMhqIYd0nLMwNLD69Npy4HI+N" crossorigin="anonymous">
+     <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+    <title>CKEditor</title>
+    <script>
+        $(document).ready(function() {
+            const wsScheme = window.location.protocol === 'https:' ? 'wss' : 'ws';
+            const wsPath = `${wsScheme}://${window.location.host}/ws/realtime_editor/`;
+
+            const ws = new WebSocket(wsPath);
+
+            let editorContent = '';
+
+            ws.onopen = function () {
+                console.log('WebSocket connection established.');
+            };
+
+            ws.onmessage = function (event) {
+                const message = JSON.parse(event.data);
+                if (message && message.content) {
+                    editorContent = message.content;
+                    $('#editor').val(editorContent);
+                }
+            };
+
+            $('#editor').on('input', function() {
+                const content = $(this).val().trim();
+                if (content !== editorContent) {
+                    ws.send(JSON.stringify({
+                        'content': content
+                    }));
+                    editorContent = content;
+                }
+            });
+        });
+    </script>
+  </head>
+  <body>
+    
+    <!-- for messages -->
+    <div class="container">
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                {{message}}
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                </div>
+            {% endfor %}
+        {% endif %}
+    </div>
+    
+    <!-- form -->
+    <div class="container mt-5">
+        <form method="post" enctype="multipart/form-data" id="richtext-form"> 
+            {% csrf_token %} 
+            {{ form.media}}
+            {% for field in form %}
+            <div class="form-group">
+                <div><label for="{{ field.id_for_label }}" class="text-dark">{{ field.label }}: </label></div>
+                <textarea id="my_text">{{field}}</textarea>
+            </div>
+            {% endfor %}
+            <div class="row justify-content-center">
+                <input type="submit" class="btn btn-info btn-lg" value="Create" />
+            </div>
+        </form>
+        
+    </div> 
+   
+       
+    
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-Fy6S3B9q64WdZWQUiU+q4/2Lc9npb8tCaSX9FK7E8HnRr0Jz8D6OP9dO5Vg3Q9ct" crossorigin="anonymous"></script>
+    
+</body>
+</html> {% endcomment %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat App</title>
+</head>
+<body>
+    <h1>Group Name:{{room}}</h1>
+       
+    <textarea id="chat-log" cols="100" rows="20" name="content"></textarea><br>
+        {% comment %} <input type="submit" value="Save"> {% endcomment %}
+   
+    {{room|json_script:"group-name"}}
+    <script>
+        const Room = JSON.parse(document.getElementById('group-name').textContent);
+        console.log(Room)
+
+        var ws = new WebSocket(
+            'ws://' + window.location.host + '/ws/sc/' + Room + '/'
+        );
+
+        ws.onopen = function () {
+            console.log('Websocket connection open...')
+        };
+
+        ws.onmessage = function (event) {
+            console.log('Message Received from server...', event.data)
+            console.log('Type of message Received from server...', typeof(event.data))
+            const data = JSON.parse(event.data) //string to object
+            console.log('Parsed data...', data)
+            console.log('Type of parsed data...', typeof(data))
+            console.log('Actual message...', data.msg)
+            document.querySelector('#chat-log').value = data.msg // Update the textarea
+        }
+
+        ws.onclose = function(event) {
+            console.log('WebSocket connection closed...', event)
+        };
+
+        // Listen to input events on the textarea
+        document.getElementById('chat-log').oninput = function(event) {
+            const message = event.target.value
+            ws.send(JSON.stringify({ //Object to string
+                'msg': message
+            }))
+        }
+    </script>    
+</body>
+</html> 
