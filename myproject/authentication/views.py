@@ -8,13 +8,6 @@ from django.core.mail import send_mail
 from django.contrib.auth.models import User
 from django.contrib import messages
 
-
-# Create your views here.
-# @login_required
-# def dashboard(request):
-#     return render(request, "authentication/dashboard.html")
-
-
 def login_view(request):
     if request.method == "POST":
         email = request.POST.get("email")
@@ -47,8 +40,7 @@ def send_otp(request):
 
         # Send OTP via email
         send_otp_email(email, otp, "Your OTP for Registration")
-        # print(first_name, last_name)
-
+     
         return render(
             request,
             "authentication/register.html",
@@ -149,9 +141,6 @@ def generate_otp():
 
 
 def validate_otp(request, type, entered_otp):
-    # You need to implement this function based on how you generate and validate OTPs
-    # Here, we assume a simple case where the OTP is stored in the session
-    # stored_otp = request.session.get("registration_otp")
     stored_otp = request.session.get(type)
     return entered_otp == stored_otp
 
@@ -162,7 +151,7 @@ def register(request):
         last_name = request.POST.get("last_name")
         email = request.POST.get("email")
         entered_otp = request.POST.get("otp")
-        # print("this is my data", first_name, last_name, email)
+      
 
         # Validate OTP
         valid_otp = validate_otp(request, "registration_otp", entered_otp)

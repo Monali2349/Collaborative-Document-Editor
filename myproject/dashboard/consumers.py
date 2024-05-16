@@ -1,52 +1,3 @@
-# # import json
-# # from channels.generic.websocket import WebsocketConsumer
-
-# # class RealtimeEditorConsumer(WebsocketConsumer):
-# #     def connect(self):
-# #         self.room_group_name = 'realtime_editor'
-
-# #         # Join room group
-# #         self.channel_layer.group_add(
-# #             self.room_group_name,
-# #             self.channel_name
-# #         )
-
-# #         self.accept()
-
-# #     def disconnect(self, close_code):
-# #         # Leave room group
-# #         self.channel_layer.group_discard(
-# #             self.room_group_name,
-# #             self.channel_name
-# #         )
-
-# #     def receive(self, text_data):
-# #         text_data_json = json.loads(text_data)
-# #         message_type = text_data_json.get('type')
-
-# #         if message_type == 'update':
-# #             content = text_data_json['content']
-
-# #             # Broadcast message to room group
-# #             self.channel_layer.group_send(
-# #                 self.room_group_name,
-# #                 {
-# #                     'type': 'realtime_editor_message',
-# #                     'content': content
-# #                 }
-# #             )
-
-# #     def realtime_editor_message(self, event):
-# #         content = event['content']
-
-# #         # Send message to WebSocket
-# #         self.send(text_data=json.dumps({
-# #             'type': 'update',
-# #             'content': content
-# #         }))
-
-# # Topic - Chat App with static group name
-
 from channels.consumer import SyncConsumer, AsyncConsumer
 from channels.exceptions import StopConsumer
 from asgiref.sync import async_to_sync 
@@ -54,8 +5,8 @@ from asgiref.sync import async_to_sync
 class MySyncConsumer(SyncConsumer):
     def websocket_connect(self,event):
         print('Websocket Connected... ',event)
-        print("Channel layer...",self.channel_layer) # get default channel layer from project
-        print("Channel name...",self.channel_name) # get default channel name from project
+        print("Channel layer...",self.channel_layer) 
+        print("Channel name...",self.channel_name) 
        
         self.room = self.scope['url_route']['kwargs']['room']
         print("Group Name...",self.room)

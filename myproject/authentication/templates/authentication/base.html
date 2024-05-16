@@ -6,23 +6,19 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>{% block title %}{% endblock %}</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" />
-    <style>
-       
-        body {
-            background-image: url('{% static "authentication/img.jpg" %}');
-            background-size: cover; /* Optional: Adjust as needed */
-            
-        }
-        h1{
-            color: white;
-        }
-    </style>
-    {% block style %}{% endblock %}
+   
+  <!-- Font Awesome CSS -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+   
+   
+    {% block style %}
+    
+    {% endblock %}
 </head>
 
 <body>
      
     {% block content %}{% endblock %}
-    {% comment %} <script src="https://cdn.ckeditor.com/ckeditor5/41.1.0/classic/ckeditor.js"></script> {% endcomment %}
+   
 </body>
 </html>

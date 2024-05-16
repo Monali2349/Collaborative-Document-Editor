@@ -2,118 +2,141 @@
 <html>
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<style>
-body {
-  margin: 0 auto;
-  max-width: 800px;
-  padding: 0 20px;
-}
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <style>
 
-.container {
+
+.joinContainer {
   border: 2px solid #dedede;
   background-color: #f1f1f1;
   border-radius: 5px;
   padding: 10px;
-  margin: 10px 0;
+  margin: 10px auto;
+  max-width: 800px;
+  padding: 0 20px;
 }
 
-.darker {
-  border-color: #ccc;
-  background-color: #ddd;
-}
-
-.container::after {
-  content: "";
-  clear: both;
-  display: table;
-}
-
-.container img {
-  float: left;
-  max-width: 60px;
-  width: 100%;
-  margin-right: 20px;
-  border-radius: 50%;
-}
-
-.container img.right {
+.joinContainer img.right {
   float: right;
   margin-left: 20px;
   margin-right:0;
 }
-
-.time-right {
-  float: right;
-  color: #aaa;
+input[type=text], select {
+  width: 100%;
+  padding: 12px 20px;
+  margin: 8px 0;
+  display: inline-block;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box;
 }
 
-.time-left {
-  float: left;
-  color: #999;
+input[type=submit] {
+  width: 100%;
+  background-color: #4CAF50;
+  color: white;
+  padding: 14px 20px;
+  margin: 8px 0;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+input[type=submit] {
+  background-color: #66afba;
+}
+input[type=submit]:hover {
+  background-color:#52949e ;
+}
+.pageTitle {
+  border-radius: 5px;
+  background-color: #f2f2f2;
+  padding: 20px;
+}
+
+.flex-container {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.card {
+  margin: 20px;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  position: relative;
+  max-width: 350px;
+}
+
+.card-header {
+
+  color: #fff;
+  border-top-left-radius: 10px;
+  border-top-right-radius: 10px;
+}
+
+.card-body {
+  padding: 20px;
+  margin
+}
+
+.card-footer {
+  border-top: none;
+}
+.box{
+  background-image: url("../static/dashboard/bg_color.jpg");
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+  margin-top:75px;
+  min-height:60vh; 
 }
 </style>
+<title>Join Document</title>
 </head>
 <body>
+  {% include 'dashboard/navbar.html' %}
+  <div class="box">
+    <div align="center" class="pageTitle">
+        <h2>Join Document</h2>
+    </div>
 
-<div align="center">
-    <h2>Django Chat</h2>
-</div>
-
-
-<div class="container">
-  {% for message in messages %}
-<div class="container-fluid p-0">
-  <div class="alert {{ message.tags }} alert-dismissible" role="alert" >
-   
-    {{ message }}
-  </div>
-</div>
-{% endfor %}
-    <style>
-    input[type=text], select {
-    width: 100%;
-    padding: 12px 20px;
-    margin: 8px 0;
-    display: inline-block;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    box-sizing: border-box;
-    }
-
-    input[type=submit] {
-    width: 100%;
-    background-color: #4CAF50;
-    color: white;
-    padding: 14px 20px;
-    margin: 8px 0;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    }
-
-    input[type=submit]:hover {
-    background-color: #45a049;
-    }
-
-    div {
-    border-radius: 5px;
-    background-color: #f2f2f2;
-    padding: 20px;
-    }
-    </style>
-
-    <form id="post-form" method="POST" action={% url "joinRoom" %}>
+    <div class="joinContainer">
+      {% for message in messages %}
+      <div class="container-fluid p-0">
+        <div class="alert {{ message.tags }} alert-dismissible" role="alert" >
+              {{ message }}
+        </div>
+      </div>
+      {% endfor %}
+      <form id="post-form" method="POST" action={% url "joinRoom" %}>
         {% csrf_token %}
         <label>Enter Document ID</label>
         <input type="text" name="doc_id" id="doc_id" width="100px" />
-        {% comment %} <label>User Email</label>
-        <input type="text" name="userEmail" id="userEmail" width="100px" /> {% endcomment %}
-        <input type="submit" value="Enter Room">
-    </form>
-</div>
+        <input type="submit" value="Join document">
+      </form>
+    </div>
 
-
+    <div class="flex-container">
+      
+      {% for joined_document in joined_documents  %}
+      <div class="card">
+        <a href="/document/{{joined_document.doc_ID.id}}">
+        <div class="card-header bg-info">
+          <h5 class="card-title">{{joined_document.doc_ID.name}}</h5>
+        </div>
+      </a>
+        <div class="card-body">
+          <p class="card-text">{{joined_document.doc_ID.text}}</p>
+        </div>
+        <div class="card-footer d-flex justify-content-between rounded-bottom bg-white">
+          <small>Created by {{joined_document.doc_ID.created_by}}</small>
+          <small>{{joined_document.doc_ID.created_at}}</small>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>  
+  {% include 'dashboard/footer.html' %}
 </body>
 
 
-</html> 
+</html>
