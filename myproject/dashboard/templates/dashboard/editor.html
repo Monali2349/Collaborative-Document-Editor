@@ -29,6 +29,7 @@
 <body>
     <div class="flex-container py-2 px-3">
         <div class="d-flex">
+            <a class="nav-link text-black" href="{% url 'dashboard' %}"> <i class="fas fa-arrow-left mr-2" style="font-size: 24px; color: black;"></i></a>
             <!-- Display document title with editable input field -->
             <h1 id="documentTitle" class="px-3" contenteditable="false">{{ document_title }}</h1> 
             <!-- Edit and save buttons -->
