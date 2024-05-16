@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Editor</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
     <script src=
  "https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js">
     </script>
@@ -27,9 +28,21 @@
 </head>
 <body>
     <div class="flex-container py-2 px-3">
-        <h1 class="px-3">Document Title: {{document_title}}</h1>
-        <div>
-            <input type="text" readonly value={{room}} id="myInput">
+        <div class="d-flex">
+            <!-- Display document title with editable input field -->
+            <h1 id="documentTitle" class="px-3" contenteditable="false">{{ document_title }}</h1> 
+            <!-- Edit and save buttons -->
+            <button id="editButton" onclick="enableEditing()" class="btn"><i class="fas fa-pencil-alt"></i></button>
+            <button id="saveButton" style="display: none;" onclick="saveDocumentTitle()" class="btn"><i class="fas fa-save"></i></button>
+            <!-- Form for submitting edited title -->
+            <form id="titleForm" method="POST" action="{% url 'rename_document' %}">
+                {% csrf_token %}
+                <input type="hidden" name="room" value="{{ room }}"> <!--uuid le rhe--> 
+                <input type="hidden" id="newTitle" name="new_title"> <!--title le rha-->
+            </form> 
+        </div>
+        <div> 
+            <input type="text" readonly value="{{ room }}" id="myInput">
             <button onclick="copyToClipboard()">Copy ID</button>
         </div>
     </div>
@@ -39,14 +52,14 @@
         <div class="flex-container py-2">
             <input type="submit" value="Save">
             <button id="print-btn">Print as PDF</button>
-        </div>
+        </div> 
         {% csrf_token %}
         <input type="hidden" name="room" value="{{ room }}">
         <textarea id="chat-log" class="editor-area" name="content" >{{content}}</textarea><br>
         </form>
     </div>
    
-    {{room|json_script:"group-name"}}
+    {{room|json_script:"group-name"}} 
     
 <script>
     document.getElementById('print-btn').addEventListener('click', function() {
@@ -116,6 +129,29 @@
             alert("Copied the text: " + copyText.value);
         }
         
+        function enableEditing() {
+            // Enable editing of the document title
+            document.getElementById('documentTitle').contentEditable = true;
+            // Show the Save button and hide the Edit button
+            document.getElementById('editButton').style.display = 'none';
+            document.getElementById('saveButton').style.display = 'inline-block'; 
+            // Set focus on the editable title
+            document.getElementById('documentTitle').focus();
+        }
+    
+        function saveDocumentTitle() {
+            // Disable editing of the document title
+            document.getElementById('documentTitle').contentEditable = false;
+            // Get the edited document title
+            var documentName = document.getElementById('documentTitle').innerText; //get new name of doc
+            // Update the hidden input value with the new title
+            document.getElementById('newTitle').value = documentName; 
+            // Submit the form to update the title
+            document.getElementById('titleForm').submit();
+            // Hide the Save button and show the Edit button
+            document.getElementById('saveButton').style.display = 'none';
+            document.getElementById('editButton').style.display = 'inline-block';
+        }
     </script>    
 </body>
-</html>
+</html> 

@@ -68,47 +68,76 @@ def join(request):
 
 
 def createRoom(request):
-    doc_name = request.POST['doc_name']
+    doc_name = request.POST['doc_name'] #getting document name from form 
     print('my room name is ', doc_name)
     new_room = Document.objects.create(name=doc_name, created_by=request.user)
-    new_room.save()
-    room_id = str(new_room.id)
+    new_room.save() 
+    room_id = str(new_room.id) 
     try:
-        docmem = DocMember.objects.get_or_create(
-            userId=request.user, doc_ID=new_room)
-        temp = DocMember.objects.filter(doc_ID=room_id, approve=True)
+        docmem = DocMember.objects.get_or_create(userId=request.user, doc_ID=new_room) 
+        temp = DocMember.objects.filter(doc_ID=room_id, approve=True) 
 
-        if temp:
-            return redirect('/document/'+room_id)
+        if temp: 
+            return redirect('/document/'+room_id) #goes to editor page
         else:
-            messages.error(request, "Not Approved.")
+            messages.error(request, "Not Approved.") 
     except Document.DoesNotExist:
         print('gadbad hogyi')
-        messages.error(request, "Document id does not exist.")
+        messages.error(request, "Document id does not exist.") 
 
 
 def joinRoom(request):
-    if request.method == 'POST':
-        doc_id = request.POST.get('doc_id')
+    if request.method == 'POST': 
+        doc_id = request.POST.get('doc_id') #take doc_id from form
         print('my document id is', doc_id)
 
         try:
           
-            doc = Document.objects.get(id=doc_id)
-            docmem = DocMember.objects.get_or_create(
-                userId=request.user, doc_ID=doc)
-            temp = DocMember.objects.filter(doc_ID=doc_id, approve=True)
+            doc = Document.objects.get(id=doc_id) #check doc_id exists or not
+            docmem = DocMember.objects.get_or_create( userId=request.user, doc_ID=doc) #check member exists in docmember
+            temp = DocMember.objects.filter(doc_ID=doc_id, approve=True) #check docmember approval 
 
             if temp:
              
-                return redirect('/document/'+doc_id)
+                return redirect('/document/'+doc_id) 
             else:
             
-                messages.error(request, "Not Approved.")
+                messages.error(request, "Not Approved.") 
         except Document.DoesNotExist:
            
             print('gadbad hogyi')
             messages.error(request, "Document id does not exist.")
 
-    return redirect('/join')
+    return redirect('/join')# redirect to same page
 
+
+def delete_document(request):
+   
+    try:
+        doc_id = request.POST.get('docId') #doc_id from form
+        # Code to delete the document with the given document_id
+        # Replace this with your actual code to delete the document 
+        document = Document.objects.get(id=doc_id) 
+        document.delete()
+        # Redirect to a success page or any other page after deletion
+        documents = Document.objects.filter(created_by = request.user)
+        return render(request, "dashboard/dashboard.html",{'documents':documents})
+    except Document.DoesNotExist:
+        # Handle the case where the document does not exist
+        # Redirect to an error page or any other page as needed
+        return redirect('error_url')
+    except Exception as e:
+        # Handle other exceptions
+        # Redirect to an error page or any other page as needed 
+        return redirect('error_url')
+    
+def rename_document(request):
+    if request.method == 'POST': 
+        new_title = request.POST.get('new_title')
+        print(new_title)
+        doc_id = request.POST.get('room')
+        Document.objects.filter(id=doc_id).update(name=new_title) 
+        return redirect(f'/document/{doc_id}')
+    else:
+        return HttpResponse('Invalid request method')
+    

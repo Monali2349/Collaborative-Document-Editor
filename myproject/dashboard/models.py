@@ -12,8 +12,10 @@ class Document(models.Model):
     created_at = models.DateTimeField(default=timezone.now)
     updated_at = models.DateTimeField(default=timezone.now)
 
-class DocMember(models.Model):
+class DocMember(models.Model): 
     userId = models.ForeignKey(User,on_delete = models.CASCADE)
     doc_ID = models.ForeignKey(Document,on_delete = models.CASCADE)
     joined_at = models.DateTimeField(default=timezone.now)
     approve = models.BooleanField(default=True)    
+
+    

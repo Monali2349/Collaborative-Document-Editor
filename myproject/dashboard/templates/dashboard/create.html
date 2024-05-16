@@ -79,7 +79,7 @@
         </div>
       </div>
       {% endfor %}
-      <form id="post-form" method="POST" action={% url "createRoom" %}>
+      <form id="post-form" method="POST" action={% url "createRoom" %}> 
         {% csrf_token %}
         <label>Enter Document Name</label>
         <input type="text" name="doc_name" id="doc_name" width="100px" />
