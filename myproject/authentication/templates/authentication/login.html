@@ -46,7 +46,7 @@
       </div>
       <div class="col-md-8 col-lg-6 col-xl-4 offset-xl-1 mx-5 card">
         <form method="post" action="{% url 'login' %}">
-          {%csrf_token%}
+          {% csrf_token %}
           <div class="d-flex flex-row align-items-center justify-content-center justify-content-lg-center">
             <p class="lead mb-0 me-3"><b>Sign In</b></p>
           </div>

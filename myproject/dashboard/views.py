@@ -54,17 +54,21 @@ def save_content(request):
         return HttpResponse('Invalid request method')
 
 def create(request):
-    return render(request, 'dashboard/create.html')
+    if not request.user.is_anonymous:
+        return render(request, 'dashboard/create.html')
+    return redirect('/login')
 
 
 
 
 def join(request):
-    print(request.user)
-    docs =  Document.objects.filter(created_by = request.user)
-    doc_list = list(docs.values_list('id',flat = True))
-    joined_documents = DocMember.objects.filter(userId=request.user).exclude(doc_ID__in = doc_list)
-    return render(request, 'dashboard/join.html',{'joined_documents':joined_documents})
+    if not request.user.is_anonymous:
+        print(request.user)
+        docs =  Document.objects.filter(created_by = request.user)
+        doc_list = list(docs.values_list('id',flat = True))
+        joined_documents = DocMember.objects.filter(userId=request.user).exclude(doc_ID__in = doc_list)
+        return render(request, 'dashboard/join.html',{'joined_documents':joined_documents})
+    return redirect('/login')
 
 
 def createRoom(request):
@@ -99,7 +103,7 @@ def joinRoom(request):
 
             if temp:
              
-                return redirect('/document/'+doc_id) 
+                return redirect('/document/'+doc_id) #Go to editor page
             else:
             
                 messages.error(request, "Not Approved.") 
@@ -112,32 +116,34 @@ def joinRoom(request):
 
 
 def delete_document(request):
-   
-    try:
-        doc_id = request.POST.get('docId') #doc_id from form
-        # Code to delete the document with the given document_id
-        # Replace this with your actual code to delete the document 
-        document = Document.objects.get(id=doc_id) 
-        document.delete()
-        # Redirect to a success page or any other page after deletion
-        documents = Document.objects.filter(created_by = request.user)
-        return render(request, "dashboard/dashboard.html",{'documents':documents})
-    except Document.DoesNotExist:
-        # Handle the case where the document does not exist
-        # Redirect to an error page or any other page as needed
-        return redirect('error_url')
-    except Exception as e:
-        # Handle other exceptions
-        # Redirect to an error page or any other page as needed 
-        return redirect('error_url')
-    
+    if not request.user.is_anonymous:
+        if request.method == 'POST':
+            try:
+                doc_id = request.POST.get('docId') #doc_id from form
+            # Code to delete the document with the given document_id
+            # Replace this with your actual code to delete the document 
+                document = Document.objects.get(id=doc_id) 
+                document.delete()
+            # Redirect to a success page or any other page after deletion
+                documents = Document.objects.filter(created_by = request.user)
+                return render(request, "dashboard/dashboard.html",{'documents':documents})
+            except Document.DoesNotExist:
+                return redirect('error_url')
+            except Exception as e:
+                return redirect('error_url')
+        else:
+            return HttpResponse('Invalid request method')
+    return redirect('/login')
+
+
 def rename_document(request):
-    if request.method == 'POST': 
-        new_title = request.POST.get('new_title')
-        print(new_title)
-        doc_id = request.POST.get('room')
-        Document.objects.filter(id=doc_id).update(name=new_title) 
-        return redirect(f'/document/{doc_id}')
-    else:
-        return HttpResponse('Invalid request method')
-    
+    if not request.user.is_anonymous:
+        if request.method == 'POST': 
+            new_title = request.POST.get('new_title')
+            print(new_title)
+            doc_id = request.POST.get('room')
+            Document.objects.filter(id=doc_id).update(name=new_title) 
+            return redirect(f'/document/{doc_id}')
+        else:
+            return HttpResponse('Invalid request method')
+    return redirect('/login')

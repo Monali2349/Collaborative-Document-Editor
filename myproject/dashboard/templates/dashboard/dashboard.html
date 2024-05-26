@@ -15,6 +15,12 @@
     position: relative;
     max-width: 300px;
     max-height: 17em;
+    transition: top 2s;
+  }
+
+  .card:hover{
+   top:-10px;
+   box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
   }
 
   .card-header {
@@ -40,6 +46,10 @@
     background-attachment: fixed;
     margin-top:100px;
     min-height:60vh; 
+  }
+  .card-title{
+    overflow:hidden;
+    max-width:200px;
   }
   
 </style>
@@ -74,10 +84,12 @@
         <a href="/document/{{document.id}}" style="color: white;">
           <h5 class="card-title">{{document.name}}</h5>
         </a>
-        <form method="POST" action="{% url 'delete_document' %}">
+        <form method="POST" action="{% url 'delete_document' %}" onsubmit="return confirmDelete(this);">
           {% csrf_token %}
           <input type="hidden" name="docId" value="{{document.id}}">
-          <button type="submit" class="btn text-danger">X</button>
+          <button type="submit" class="btn text-danger">
+            <i class="fas fa-trash-alt"></i>
+          </button>
         </form>
       </div>
           <div class="card-body">
@@ -96,5 +108,14 @@
   </div>
   
 </div>
+<script>
+  function confirmDelete(form) {
+    if (confirm("Are you sure you want to delete this document?")) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+</script>
 {% include 'dashboard/footer.html' %}
 {% endblock content %}
