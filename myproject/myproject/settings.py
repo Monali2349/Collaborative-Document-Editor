@@ -35,6 +35,7 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 # Application definition
 
 INSTALLED_APPS = [
+    'daphne',
     'ckeditor',
     'authentication',
     'dashboard',
@@ -78,7 +79,10 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'myproject.wsgi.application'
+# WSGI_APPLICATION = 'myproject.wsgi.application'
+
+
+ASGI_APPLICATION = 'myproject.asgi.application'
 
 
 # Database
@@ -114,13 +118,13 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/5.0/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+# LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+# TIME_ZONE = 'UTC'
 
-USE_I18N = True
+# USE_I18N = True
 
-USE_TZ = True
+# USE_TZ = True
 
 
 # Static files (CSS, JavaScript, Images)
@@ -173,3 +177,17 @@ CKEDITOR_CONFIGS = {
             ]),
         },
 }
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels.layers.InMemoryChannelLayer',
+    },
+}
+LANGUAGE_CODE = 'en-us'
+
+TIME_ZONE = 'Asia/Kolkata'
+
+USE_I18N = True
+
+USE_L10N = True
+
+USE_TZ = False

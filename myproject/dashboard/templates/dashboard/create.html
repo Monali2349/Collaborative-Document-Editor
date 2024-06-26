@@ -1,48 +1,95 @@
-<!-- blogs/add_blogs.html-->
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <style>
 
-<!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css" integrity="sha384-xOolHFLEh07PJGoPkLv1IbcEPTNtaed2xpHsD9ESMhqIYd0nLMwNLD69Npy4HI+N" crossorigin="anonymous">
-    <title>CKEditor</title>
-  </head>
-  <body>
-    
-    <!-- for messages -->
-    <div class="container">
-        {% if messages %}
-            {% for message in messages %}
-                <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
-                {{message}}
-                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-                </div>
-            {% endfor %}
-        {% endif %}
+
+.joinContainer {
+  border: 2px solid #dedede;
+  background-color: #f1f1f1;
+  border-radius: 5px;
+  padding: 10px;
+  margin: 10px auto;
+  max-width: 800px;
+  padding: 0 20px;
+  
+}
+
+.joinContainer img.right {
+  float: right;
+  margin-left: 20px;
+  margin-right:0;
+ 
+}
+    input[type=text], select {
+    width: 100%;
+    padding: 12px 20px;
+    margin: 8px 0;
+    display: inline-block;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+    }
+
+    input[type=submit] {
+    width: 100%;
+    background-color: #66afba;
+    color: white;
+    padding: 14px 20px;
+    margin: 8px 0;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    }
+
+    input[type=submit]:hover {
+    background-color: #52949e;
+    }
+ .pageTitle {
+    border-radius: 5px;
+    background-color: #f2f2f2;
+    padding: 20px;
+    }
+  .box{
+    background-image: url("../static/dashboard/bg_color.jpg");
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+    margin-top:75px;
+    min-height:75vh;
+  }
+ 
+</style>
+<title>Create Document</title>
+</head>
+<body>
+  {% include 'dashboard/navbar.html' %}
+  <div class="box">
+    <div align="center" class="pageTitle">
+        <h2>Create Document</h2>
     </div>
-    
-    <!-- form -->
-    <div class="container mt-5">
-        <form method="post" enctype="multipart/form-data"> 
-            {% csrf_token %} 
-            {{ form.media}}
-            {% for field in form %}
-            <div class="form-group">
-                <div><label for="{{ field.id_for_label }}" class="text-dark">{{ field.label }}: </label></div>
-                {{ field }}
-            </div>
-            {% endfor %}
-            <div class="row justify-content-center">
-                <input type="submit" class="btn btn-info btn-lg" value="Create" />
-            </div>
-        </form>
+
+    <div class="joinContainer">
+      {% for message in messages %}
+      <div class="container-fluid p-0">
+        <div class="alert {{ message.tags }} alert-dismissible" role="alert" >
+              {{ message }}
+        </div>
+      </div>
+      {% endfor %}
+      <form id="post-form" method="POST" action={% url "createRoom" %}> 
+        {% csrf_token %}
+        <label>Enter Document Name</label>
+        <input type="text" name="doc_name" id="doc_name" width="100px" />
+        <input type="submit" value="Create document">
+      </form>
     </div>
-    
-    <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-Fy6S3B9q64WdZWQUiU+q4/2Lc9npb8tCaSX9FK7E8HnRr0Jz8D6OP9dO5Vg3Q9ct" crossorigin="anonymous"></script>
-  </body>
+  </div>  
+  {% include 'dashboard/footer.html' %}
+  
+</body>
+
+
 </html>

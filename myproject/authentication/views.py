@@ -7,12 +7,7 @@ import string
 from django.core.mail import send_mail
 from django.contrib.auth.models import User
 from django.contrib import messages
-
-
-# Create your views here.
-# @login_required
-# def dashboard(request):
-#     return render(request, "authentication/dashboard.html")
+from django.utils.html import format_html
 
 
 def login_view(request):
@@ -45,9 +40,18 @@ def send_otp(request):
         # Save OTP in session
         request.session["registration_otp"] = otp
 
+        message = format_html(
+        """
+        <p>Dear User,</p>
+        <p>Thank you for registering on our platform. Your One-Time Password (OTP) for completing your registration is:</p>
+        <p><strong>{}</strong></p>
+        <p>Please enter this OTP in the registration form to verify your email address and complete the registration process.</p>
+        <p>If you did not initiate this request, please ignore this email.</p>
+        <p>Best regards,<br>Monali</p>
+        """, otp)
+
         # Send OTP via email
-        send_otp_email(email, otp, "Your OTP for Registration")
-        # print(first_name, last_name)
+        send_otp_email(email, otp, "Your OTP for Registration",message)
 
         return render(
             request,
@@ -73,8 +77,18 @@ def reset_otp(request):
         # Save OTP in session
         request.session["reset_otp"] = otp
 
+        message = format_html(
+         """
+        <p>Dear User,</p>
+        <p>We received a request to reset your password. Your One-Time Password (OTP) for completing the password reset process is:</p>
+        <p><strong>{}</strong></p>
+        <p>Please enter this OTP in the password reset form to verify your identity and reset your password.</p>
+        <p>If you did not request a password reset, please ignore this email or contact support if you have concerns.</p>
+        <p>Best regards,<br>Monali</p>
+        """, otp)
+
         # Send OTP via email
-        send_otp_email(email, otp, "Your OTP for Password Reset")
+        send_otp_email(email, otp, "Your OTP for Password Reset",message)
 
         return render(
             request,
@@ -100,14 +114,16 @@ def forget_password(request):
             if not valid_otp:
                 messages.error(request, "Invalid OTP. Please try again.")
                 return render(
-                    request, "authentication/forgetpassword.html", {"email": email}
+                    request, "authentication/forgetpassword.html", {
+                        "email": email}
                 )
 
             # Check if passwords match
             if new_password != confirm_password:
                 messages.error(request, "Passwords do not match.")
                 return render(
-                    request, "authentication/forgetpassword.html", {"email": email}
+                    request, "authentication/forgetpassword.html", {
+                        "email": email}
                 )
 
             # Get the user by email
@@ -133,14 +149,13 @@ def forget_password(request):
     return render(request, "authentication/forgetpassword.html")
 
 
-def send_otp_email(email, otp, subject):
-    
+def send_otp_email(email, otp, subject,message):
+   
 
-    
     from_email = settings.EMAIL_HOST_USER
     recipient_list = [email]
 
-    send_mail(subject, otp, from_email, recipient_list)
+    send_mail(subject, "", from_email, recipient_list, html_message=message)
 
 
 def generate_otp():
@@ -149,9 +164,6 @@ def generate_otp():
 
 
 def validate_otp(request, type, entered_otp):
-    # You need to implement this function based on how you generate and validate OTPs
-    # Here, we assume a simple case where the OTP is stored in the session
-    # stored_otp = request.session.get("registration_otp")
     stored_otp = request.session.get(type)
     return entered_otp == stored_otp
 
@@ -162,7 +174,6 @@ def register(request):
         last_name = request.POST.get("last_name")
         email = request.POST.get("email")
         entered_otp = request.POST.get("otp")
-        # print("this is my data", first_name, last_name, email)
 
         # Validate OTP
         valid_otp = validate_otp(request, "registration_otp", entered_otp)
@@ -198,5 +209,3 @@ def register(request):
             messages.error(request, "Invalid OTP. Please try again.")
 
     return render(request, "authentication/register.html")
-
-

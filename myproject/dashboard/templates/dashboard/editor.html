@@ -1,0 +1,158 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Editor</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+    <script src=
+ "https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js">
+    </script>
+    <script src=
+"https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js">
+    </script>
+    <style>
+        .editor-area{
+          height: 80vh;
+          width: 100%;
+        }
+        .flex-container {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+        }  
+      </style>
+
+</head>
+<body>
+    <div class="flex-container py-2 px-3">
+        <div class="d-flex">
+            <a class="nav-link text-black" href="{% url 'dashboard' %}"> <i class="fas fa-arrow-left mr-2" style="font-size: 24px; color: black;"></i></a>
+            <!-- Display document title with editable input field -->
+            <h1 id="documentTitle" class="px-3" contenteditable="false">{{ document_title }}</h1> 
+            <!-- Edit and save buttons -->
+            <button id="editButton" onclick="enableEditing()" class="btn"><i class="fas fa-pencil-alt"></i></button>
+            <button id="saveButton" style="display: none;" onclick="saveDocumentTitle()" class="btn"><i class="fas fa-save"></i></button>
+            <!-- Form for submitting edited title -->
+            <form id="titleForm" method="POST" action="{% url 'rename_document' %}">
+                {% csrf_token %}
+                <input type="hidden" name="room" value="{{ room }}"> <!--uuid le rhe--> 
+                <input type="hidden" id="newTitle" name="new_title"> <!--title le rha-->
+            </form> 
+        </div>
+        <div> 
+            <input type="text" readonly value="{{ room }}" id="myInput">
+            <button onclick="copyToClipboard()">Copy ID</button>
+        </div>
+    </div>
+    <div class="py-2 px-3">  
+        <form id="post-form" method="POST" action={% url "saveContent" %}>
+       
+        <div class="flex-container py-2">
+            <input type="submit" value="Save">
+            <button id="print-btn">Print as PDF</button>
+        </div> 
+        {% csrf_token %}
+        <input type="hidden" name="room" value="{{ room }}">
+        <textarea id="chat-log" class="editor-area" name="content" >{{content}}</textarea><br>
+        </form>
+    </div>
+   
+    {{room|json_script:"group-name"}} 
+    
+<script>
+    document.getElementById('print-btn').addEventListener('click', function() {
+        var content = document.getElementById('chat-log').value;
+    const { jsPDF } = window.jspdf;
+    var pdf = new jsPDF(); 
+
+    // Add document title at the top-center of the PDF
+    const title = "{{ document_title }}"; 
+    const titleWidth = pdf.getStringUnitWidth(title) * pdf.internal.getFontSize() / pdf.internal.scaleFactor;
+    const centerX = (pdf.internal.pageSize.width - titleWidth) / 2;
+    pdf.text(title, centerX, 10);
+
+    // Add content text
+    pdf.text(content, 10, 30);
+
+    pdf.save('content.pdf');
+    });
+
+ 
+        const Room = JSON.parse(document.getElementById('group-name').textContent);
+        console.log(Room)
+
+        var ws = new WebSocket(
+            'ws://' + window.location.host + '/ws/sc/' + Room + '/'
+        );
+
+        ws.onopen = function () {
+            console.log('Websocket connection open...')
+        };
+
+        ws.onmessage = function (event) {
+            console.log('Message Received from server...', event.data)
+            console.log('Type of message Received from server...', typeof(event.data))
+            const data = JSON.parse(event.data) //string to object
+            console.log('Parsed data...', data)
+            console.log('Type of parsed data...', typeof(data))
+            console.log('Actual message...', data.msg)
+            document.querySelector('#chat-log').value = data.msg // Update the textarea
+        }
+
+        ws.onclose = function(event) {
+            console.log('WebSocket connection closed...', event)
+        };
+
+       
+
+        // Listen to input events on the textarea
+        document.getElementById('chat-log').oninput = function(event) {
+            const message = event.target.value
+            ws.send(JSON.stringify({ //Object to string
+                'msg': message
+            }))
+        }
+        function copyToClipboard() {
+            // Get the text field
+            var copyText = document.getElementById("myInput");
+
+            // Select the text field
+            copyText.select();
+            copyText.setSelectionRange(0, 99999); // For mobile devices
+
+             // Copy the text inside the text field
+            navigator.clipboard.writeText(copyText.value);
+
+            // Alert the copied text
+            alert("Copied the text: " + copyText.value);
+        }
+        
+        function enableEditing() {
+            // Enable editing of the document title
+            document.getElementById('documentTitle').contentEditable = true;
+            // Show the Save button and hide the Edit button
+            document.getElementById('editButton').style.display = 'none';
+            document.getElementById('saveButton').style.display = 'inline-block'; 
+            // Set focus on the editable title
+            document.getElementById('documentTitle').focus();
+        }
+    
+        function saveDocumentTitle() {
+            // Disable editing of the document title
+            document.getElementById('documentTitle').contentEditable = false;
+            // Get the edited document title
+            var documentName = document.getElementById('documentTitle').innerText; //get new name of doc
+            // Update the hidden input value with the new title
+            document.getElementById('newTitle').value = documentName; 
+            // Submit the form to update the title
+            document.getElementById('titleForm').submit();
+            // Hide the Save button and show the Edit button
+            document.getElementById('saveButton').style.display = 'none';
+            document.getElementById('editButton').style.display = 'inline-block';
+        }
+    </script>    
+</body>
+</html> 
